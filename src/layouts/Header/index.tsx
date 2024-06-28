@@ -1,7 +1,7 @@
 import React, { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import './style.css';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { AUTH_PATH, MAIN_PATH, SEARCH_PATH, USER_PATH } from 'constant';
+import { AUTH_PATH, BOARD_DETAIL_PATH, BOARD_PATH, BOARD_UPDATE_PATH, BOARD_WRITE_PATH, MAIN_PATH, SEARCH_PATH, USER_PATH } from 'constant';
 import { useCookies } from 'react-cookie';
 import { useBoardStore, useLoginUserStore } from 'stores';
 
@@ -16,6 +16,22 @@ export default function Header() {
     const [cookies, setCookie] = useCookies();
     //       state: 로그인 상태        //
     const [isLogin,setLogin] = useState<boolean>(false);
+
+    //       state: 인증 페이지 상태        //
+    const [isAuthPage,setAuthPage] = useState<boolean>(false);
+    //       state: 메인 페이지 상태        //
+    const [isMainPage,setMainPage] = useState<boolean>(false);
+    //       state: 검색 페이지 상태        //
+    const [isSearchPage,setSearchPage] = useState<boolean>(false);
+    //       state: 게시물 상세 페이지 상태        //
+    const [isBoardDetailPage,setBoardDetailPage] = useState<boolean>(false);
+    //       state: 게시물 작성 페이지 상태        //
+    const [isBoardWritePage,setBoardWritePage] = useState<boolean>(false);
+    //       state: 게시물 수정 페이지 상태        //
+    const [isBoardUpdatePage,setBoardUpdatePage] = useState<boolean>(false);
+    //       state: 유저 페이지 상태        //
+    const [isUserPage,setUserPage] = useState<boolean>(false);
+
 
     //        function: 네비게이트 함수      //
     const navigate = useNavigate();
@@ -128,6 +144,7 @@ export default function Header() {
         
     //        component: 검색 버튼 컴포넌트        //
     const UploadButton = () => {
+        //        state: 게시물 상태       //
         const {title, content, boardImageFileList, resetBoard} = useBoardStore();
 
         //        event handler: 업로드 버튼 클릭 이벤트      //
@@ -142,6 +159,26 @@ export default function Header() {
         return <div className='disable-button'>{'업로드'}</div>;
     }
     
+    //        effect: path가 변경될 때 마다 실행될 함수      //
+    useEffect(()=>{
+        const isAuthPage = pathname.startsWith(AUTH_PATH());
+        setAuthPage(isAuthPage);
+        const isMainPage = pathname ===MAIN_PATH();
+        setMainPage(isMainPage);
+        const isSearchPage = pathname.startsWith(SEARCH_PATH(''));
+        setSearchPage(isSearchPage);
+        const isBoardDetailPage = pathname.startsWith(BOARD_PATH() + '/' + BOARD_DETAIL_PATH(''));
+        setBoardDetailPage(isBoardDetailPage);
+        const isBoardWritePage = pathname.startsWith(BOARD_PATH() + '/' + BOARD_WRITE_PATH());
+        setBoardWritePage(isBoardWritePage);
+        const isBoardUpdatePage = pathname.startsWith(BOARD_PATH() + '/' + BOARD_UPDATE_PATH(''));
+        setBoardUpdatePage(isBoardUpdatePage);
+        const isUserPage = pathname.startsWith(USER_PATH(''));
+        setUserPage(isUserPage);
+
+    },[pathname])
+
+
     //       render: 헤더 레이아웃  랜더링      //
     return (
     <div id='header'>
@@ -153,9 +190,9 @@ export default function Header() {
                 <div className='header-logo'>{'SeungJae Board'}</div>
             </div>
             <div className='header-right-box'>
-                <SearchButton/>
-                <MyPageButton/>
-                <UploadButton/>
+                {(isAuthPage || isMainPage || isBoardDetailPage || isSearchPage) && <SearchButton/>}
+                {(isMainPage || isSearchPage || isBoardDetailPage || isUserPage) && <MyPageButton/>}
+                {(isBoardWritePage || isBoardUpdatePage) && <UploadButton/>}
             </div>
         </div>
     </div>
