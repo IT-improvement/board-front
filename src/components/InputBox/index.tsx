@@ -10,7 +10,7 @@ interface Props{
     setValue: Dispatch<SetStateAction<string>>;//value를 바꾸는 함수
     error: boolean;
 
-    icon?: string;
+    icon?: 'eye-light-off-icon' | 'eye-light-on-icon' | 'expand-right-light-icon';
     onButtonClick?: () => void;
 
     message?: string;
@@ -46,7 +46,7 @@ return(
             <input  ref={ref} className='input' type={type} placeholder={placeholder} 
             value={value} onChange={onChangeHandler} onKeyDown={onKeyDownHandler}/>
             {onButtonClick !== undefined && 
-                <div className='icon-button'>
+                <div className='icon-button' onClick={onButtonClick}>
                     {icon !== undefined && <div className={`icon ${icon}`}></div>}
                 </div>
             }
